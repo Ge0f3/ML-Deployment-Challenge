@@ -56,7 +56,7 @@ class ServiceLayer:
        data = dict()
        data['predictions'] = []
        
-       for (imagenetID,label,prob) in results[0]:
+       for (imagenet_id,label,prob) in results[0]:
            r = {'label':label,'probability':float(prob)*100}
            data['predictions'].append(r)
        return data

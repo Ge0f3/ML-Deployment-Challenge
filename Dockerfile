@@ -1,7 +1,7 @@
 # Format: FROM    repository[:version]
 FROM ubuntu:17.04
 
-MAINTAINER cocolevio 'geoffrey.geofe@gmail.com'
+MAINTAINER Geoffrey 'geoffrey.geofe@gmail.com'
 
 FROM python:3.6
 
@@ -15,13 +15,11 @@ WORKDIR /app
 
 RUN pip install --upgrade pip
 RUN pip3 install -r requirements.txt
+RUN pip3 install gunicorn
 RUN export DYLD_LIBRARY_PATH=/usr/local/mysql/lib
 
 COPY . /app
 
-ENTRYPOINT ["python3"]
-
-CMD [ "manage.py" ]
-
+# Port to expose and command to start the server.
 EXPOSE 5411
-EXPOSE 80
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5411", "manage:app"]
