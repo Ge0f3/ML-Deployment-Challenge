@@ -24,32 +24,41 @@ import tensorflow as tf
 
 log = logging.getLogger(__name__)
 
-
-
+vgg_model = None
 
 
 class ServiceLayer:
 
-   @staticmethod
-   def preprocess_image(image,target):
+    
+    @classmethod
+    def load_model(cls):
+        global vgg_model 
+        vgg_model= vgg16.VGG16(weights='imagenet')
+    
+    @staticmethod
+    def preprocess_image(image,target):
        #if image mode is not RGB converting it 
        if image.mode != 'RGB':
            image = image.convert('RGB')
        #Resize the input image 
        image = image.resize(target)
        image = img_to_array(image)
+    #    image = np.array(image)/255.0
+       print("Image shape is {}".format(image.shape))
        image = np.expand_dims(image,axis=0)
+       print("The image shape is {}".format(image.shape))
        preprocess_image = imagenet_utils.preprocess_input(image)
        
        #Return the processed image
        return preprocess_image
     
-   @staticmethod
-   def predict_image(processed_image):
+    @classmethod
+    def predict_image(cls,processed_image):
        vgg_model = vgg16.VGG16(weights='imagenet')
        graph = tf.get_default_graph()
        with graph.as_default():
            pred = vgg_model.predict(processed_image)
+
 
        results = imagenet_utils.decode_predictions(pred)
        
@@ -57,9 +66,13 @@ class ServiceLayer:
        data['predictions'] = []
        
        for (imagenet_id,label,prob) in results[0]:
-           r = {'label':label,'probability':float(prob)*100}
+           r = {'label':label,'probability':float(prob)}
            data['predictions'].append(r)
+
+       K.clear_session()
+
        return data
+       
       
 
 

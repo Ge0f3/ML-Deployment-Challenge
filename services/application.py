@@ -61,6 +61,7 @@ def create_app(config_obj=None, **kwargs):
         app.config.from_object(RequiredConstants)
 
     register_blueprints(app)
+    
 
     #custom json encoderd to deal with nonjson convertables
     app.json_encoder = MyJSONEncoder
