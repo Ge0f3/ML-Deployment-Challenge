@@ -1,6 +1,7 @@
 import logging
 from flask import request,jsonify
-import json 
+import json,io
+from PIL import Image
 from flask_restplus import Resource, Namespace, reqparse
 from werkzeug.datastructures import FileStorage
 from services.common.v1.resources.Image_classification.ServiceLayer import ServiceLayer
@@ -33,10 +34,19 @@ class GetStatus(Resource):
 class Upload(Resource):
     def post(self):
         '''upload image to get prediction about the image'''
+        #Getting the file from the request
+        file = request.files['file'].read()
         try:
-            return jsonify({
-                'prediction':'prediction'
-            })
+            #reading the image from the file object
+            image = Image.open(io.BytesIO(file))
+
+            #Preprocess the file
+            processed_image = ServiceLayer.preprocess_image(image,target=(224,224))
+            print("The image has been preprocessed")
+
+            #predicting the labels from the image 
+            data = ServiceLayer.predict_image(processed_image)
+            return jsonify(data)
 
         except Exception as E:
             print(E)
