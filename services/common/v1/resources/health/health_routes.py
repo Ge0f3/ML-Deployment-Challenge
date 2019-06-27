@@ -7,7 +7,7 @@ from flask_restplus import Resource, Namespace
 
 log = logging.getLogger(__name__)
 
-ns = Namespace('health', description='Operations related to servic health')
+ns = Namespace('health', description='Check health of the service')
 
 @ns.route('')
 class HealthCheck(Resource):
